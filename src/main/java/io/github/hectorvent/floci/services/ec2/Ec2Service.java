@@ -996,7 +996,7 @@ public class Ec2Service {
 
     // ─── Subnets ───────────────────────────────────────────────────────────────
 
-    public Subnet createSubnet(String region, String vpcId, String cidrBlock, String availabilityZone) {
+    public synchronized Subnet createSubnet(String region, String vpcId, String cidrBlock, String availabilityZone) {
         ensureDefaultResources(region);
         getRequiredVpc(region, vpcId);
 
@@ -1110,7 +1110,7 @@ public class Ec2Service {
         securityGroups.delete(key(region, groupId));
     }
 
-    public List<SecurityGroupRule> authorizeSecurityGroupIngress(String region, String groupId, List<IpPermission> permissions) {
+    public synchronized List<SecurityGroupRule> authorizeSecurityGroupIngress(String region, String groupId, List<IpPermission> permissions) {
         ensureDefaultResources(region);
         SecurityGroup sg = getRequiredSecurityGroup(region, groupId);
 
@@ -1123,7 +1123,7 @@ public class Ec2Service {
         return rules;
     }
 
-    public List<SecurityGroupRule> authorizeSecurityGroupEgress(String region, String groupId, List<IpPermission> permissions) {
+    public synchronized List<SecurityGroupRule> authorizeSecurityGroupEgress(String region, String groupId, List<IpPermission> permissions) {
         ensureDefaultResources(region);
         SecurityGroup sg = getRequiredSecurityGroup(region, groupId);
 
@@ -1823,7 +1823,7 @@ public class Ec2Service {
         routeTables.delete(key(region, routeTableId));
     }
 
-    public RouteTableAssociation associateRouteTable(String region, String routeTableId, String subnetId) {
+    public synchronized RouteTableAssociation associateRouteTable(String region, String routeTableId, String subnetId) {
         ensureDefaultResources(region);
         RouteTable rt = getRequiredRouteTable(region, routeTableId);
 
@@ -1839,7 +1839,7 @@ public class Ec2Service {
         return assoc;
     }
 
-    public void disassociateRouteTable(String region, String associationId) {
+    public synchronized void disassociateRouteTable(String region, String associationId) {
         ensureDefaultResources(region);
         for (RouteTable rt : routeTables.scan(k -> true)) {
             if (rt.getRegion().equals(region)) {
@@ -1849,7 +1849,7 @@ public class Ec2Service {
         }
     }
 
-    public void createRoute(String region, String routeTableId, String destinationCidrBlock, String gatewayId) {
+    public synchronized void createRoute(String region, String routeTableId, String destinationCidrBlock, String gatewayId) {
         ensureDefaultResources(region);
         RouteTable rt = getRequiredRouteTable(region, routeTableId);
 
@@ -1857,7 +1857,7 @@ public class Ec2Service {
         routeTables.put(key(region, routeTableId), rt);
     }
 
-    public void deleteRoute(String region, String routeTableId, String destinationCidrBlock) {
+    public synchronized void deleteRoute(String region, String routeTableId, String destinationCidrBlock) {
         ensureDefaultResources(region);
         RouteTable rt = getRequiredRouteTable(region, routeTableId);
 
